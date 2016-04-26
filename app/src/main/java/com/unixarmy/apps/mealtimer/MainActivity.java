@@ -1,18 +1,16 @@
 package com.unixarmy.apps.mealtimer;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         // we skip the first meal because we assume the user is starting the timers at the first
         // mealtime
 
-        Intent[] intents = new Intent[meals.length];
         for (int i=1; i < meals.length; i++) {
 
             Calendar cal = Calendar.getInstance();
@@ -68,19 +65,19 @@ public class MainActivity extends AppCompatActivity {
                     .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
 
             if (mealIntent.resolveActivity(getPackageManager()) != null) {
-                intents[i] = mealIntent;
+
+                try {
+                    startActivityForResult(mealIntent,i);
+                } catch (SecurityException e) {
+                    Snackbar.make(view,R.string.no_permission_for_timers, Snackbar.LENGTH_INDEFINITE).setAction("Action", null).show();
+                    return;
+                }
             } else {
                 Snackbar.make(view, R.string.no_intent_handlers, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 return;
             }
         }
 
-        try {
-            startActivities(intents);
-        } catch (SecurityException e) {
-            Snackbar.make(view,R.string.no_permission_for_timers, Snackbar.LENGTH_INDEFINITE).setAction("Action", null).show();
-            return;
-        }
 
         // all done, show a message
         Snackbar.make(view, R.string.timers_created, Snackbar.LENGTH_LONG)
@@ -90,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         Intent showAlarmsIntent = new Intent(AlarmClock.ACTION_SHOW_ALARMS);
         if (showAlarmsIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(showAlarmsIntent);
+        } else {
+            Snackbar.make(view, "Couldn't launch alarm clock to show you the newly created alarms.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
 
     }
