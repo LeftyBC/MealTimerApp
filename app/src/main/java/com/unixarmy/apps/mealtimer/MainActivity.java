@@ -41,10 +41,6 @@ public class MainActivity extends AppCompatActivity {
         startDate.setHours(startTime.getCurrentHour());
         startDate.setMinutes(startTime.getCurrentMinute());
 
-
-        // we now have the start time in seconds-from-midnight
-        // each timer will add the interval in seconds then convert that to HH:MM
-
         // we skip the first meal because we assume the user is starting the timers at the first
         // mealtime
 
@@ -77,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         }
-
 
         // all done, show a message
         Snackbar.make(view, R.string.timers_created, Snackbar.LENGTH_LONG)
